@@ -1484,6 +1484,35 @@ public:
         tmp = builder->CreateCall(fn_sqrt, {c});
     }
 
+    void visit_IntrinsicFunctionCbrt(const ASR::IntrinsicFunctionCbrt_t &x) {
+        if (x.m_value) {
+            this->visit_expr_wrapper(x.m_value, true);
+            return;
+        }
+        this->visit_expr(*x.m_arg);
+        if (tmp->getType()->isPointerTy()) {
+            tmp = CreateLoad(tmp);
+        }
+        llvm::Value *c = tmp;
+        int64_t kind_value = ASRUtils::extract_kind_from_ttype_t(ASRUtils::expr_type(x.m_arg));
+        std::string func_name;
+        if (kind_value ==4) {
+            func_name = "llvm.cbrt.f32";
+        } else {
+            func_name = "llvm.cbrt.f64";
+        }
+        llvm::Type *type = llvm_utils->getFPType(kind_value);
+        llvm::Function *fn_cbrt = module->getFunction(func_name);
+        if (!fn_cbrt) {
+            llvm::FunctionType *function_type = llvm::FunctionType::get(
+                    type, {type}, false);
+            fn_cbrt = llvm::Function::Create(function_type,
+                    llvm::Function::ExternalLinkage, func_name,
+                    module.get());
+        }
+        tmp = builder->CreateCall(fn_cbrt, {c});
+    }
+
     void visit_ListAppend(const ASR::ListAppend_t& x) {
         ASR::List_t* asr_list = ASR::down_cast<ASR::List_t>(ASRUtils::expr_type(x.m_a));
         int64_t ptr_loads_copy = ptr_loads;

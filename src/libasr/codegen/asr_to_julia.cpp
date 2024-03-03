@@ -1184,6 +1184,17 @@ public:
         src = "sqrt(" + src + ")";
     }
 
+    void visit_IntrinsicFunctionCbrt(const ASR::IntrinsicFunctionCbrt_t &x) {
+        /*
+        if (x.m_value) {
+            this->visit_expr(*x.m_value);
+            return;
+        }
+        */
+        this->visit_expr(*x.m_arg);
+        src = "cbrt(" + src + ")";
+    }
+
     void visit_ImpliedDoLoop(const ASR::ImpliedDoLoop_t& /*x*/)
     {
         std::string indent(indentation_level * indentation_spaces, ' ');

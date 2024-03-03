@@ -1162,6 +1162,7 @@ public:
             SET_INTRINSIC_NAME(Max, "max");
             SET_INTRINSIC_NAME(Min, "min");
             SET_INTRINSIC_NAME(Sqrt, "sqrt");
+            SET_INTRINSIC_NAME(Cbrt, "cbrt");
             default : {
                 throw LCompilersException("IntrinsicScalarFunction: `"
                     + ASRUtils::get_intrinsic_name(x.m_intrinsic_id)
@@ -1815,6 +1816,11 @@ public:
     void visit_IntrinsicFunctionSqrt(const ASR::IntrinsicFunctionSqrt_t &x) {
         visit_expr(*x.m_arg);
         s = "sqrt(" + s + ")";
+    }
+
+    void visit_IntrinsicFunctionCbrt(const ASR::IntrinsicFunctionCbrt_t &x) {
+        visit_expr(*x.m_arg);
+        s = "cbrt(" + s + ")";
     }
 
     /******************************* Case Stmt ********************************/

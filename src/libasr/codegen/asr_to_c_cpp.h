@@ -3076,6 +3076,14 @@ PyMODINIT_FUNC PyInit_lpython_module_)" + fn_name + R"((void) {
         src = out;
     }
 
+    void visit_IntrinsicFunctionCbrt(const ASR::IntrinsicFunctionCbrt_t &x) {
+        std::string out = "cbrt";
+        headers.insert("math.h");
+        this->visit_expr(*x.m_arg);
+        out += "(" + src + ")";
+        src = out;
+    }
+
 };
 
 } // namespace LCompilers
