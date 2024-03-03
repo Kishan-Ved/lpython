@@ -1838,26 +1838,22 @@ namespace Cbrt {
             "ASR Verify: Call `cbrt` must have exactly one argument",
             x.base.base.loc, diagnostics);
         ASR::ttype_t *type = ASRUtils::expr_type(x.m_args[0]);
-        ASRUtils::require_impl(ASRUtils::is_real(*type) || ASRUtils::is_complex(*type),
-            "ASR Verify: Arguments to `cbrt` must be of real or complex type",
+        ASRUtils::require_impl(ASRUtils::is_integer(*type) || ASRUtils::is_real(*type),
+            "ASR Verify: Arguments to `cbrt` must be of integer or real type",
             x.base.base.loc, diagnostics);
     }
 
     static ASR::expr_t *eval_Cbrt(Allocator &al, const Location &loc,
             ASR::ttype_t* arg_type, Vec<ASR::expr_t*> &args) {
-        if (is_real(*arg_type)) {
-            double val = ASR::down_cast<ASR::RealConstant_t>(expr_value(args[0]))->m_r;
-            return f(std::cbrt(val), arg_type);
-        } else {
-            std::complex<double> crv;
-            if( ASRUtils::extract_value(args[0], crv) ) {
-                std::complex<double> val = std::cbrt(crv);
-                return ASRUtils::EXPR(ASR::make_ComplexConstant_t(
-                    al, loc, val.real(), val.imag(), arg_type));
-            } else {
-                return nullptr;
-            }
-        }
+        // if (is_real(*arg_type)) {
+        double val = ASR::down_cast<ASR::RealConstant_t>(expr_value(args[0]))->m_r;
+        return f(std::cbrt(val), arg_type);
+        // }
+
+        // TO DO: Figure out how to get cbrt working for complex numbers as std::cbrt() does not work for complex numbers
+
+        // else {
+        // }
     }
 
     static inline ASR::asr_t* create_Cbrt(Allocator& al, const Location& loc,
@@ -1882,13 +1878,18 @@ namespace Cbrt {
             SymbolTable *scope, Vec<ASR::ttype_t*>& arg_types, ASR::ttype_t *return_type,
             Vec<ASR::call_arg_t>& new_args, int64_t overload_id) {
         ASR::ttype_t* arg_type = arg_types[0];
-        if (is_real(*arg_type)) {
-            return EXPR(ASR::make_IntrinsicFunctionCbrt_t(al, loc,
-                new_args[0].m_value, return_type, nullptr));
-        } else {
-            return UnaryIntrinsicFunction::instantiate_functions(al, loc, scope,
+
+        return UnaryIntrinsicFunction::instantiate_functions(al, loc, scope,
                 "cbrt", arg_type, return_type, new_args, overload_id);
-        }
+
+        // if (is_real(*arg_type)) {
+        //     return EXPR(ASR::make_IntrinsicFunctionCbrt_t(al, loc,
+        //         new_args[0].m_value, return_type, nullptr));
+        // } else {
+        //     return UnaryIntrinsicFunction::instantiate_functions(al, loc, scope,
+        //         "cbrt", arg_type, return_type, new_args, overload_id);
+        // }
+        
     }
 
 }  // namespace Cbrt
